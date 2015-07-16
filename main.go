@@ -79,6 +79,17 @@ func (f *tagsFlag) Set(s string) error {
 
 var dotStar = regexp.MustCompile(".*")
 
+// EK: ugh. fix path for emacs compile buffer.
+func fmtError(s string) string {
+	// github.com/N3TWORK/mafia/server/db/attack.go:248:27 some error
+	s = os.Getenv("GOPATH") + "/src/" + s
+	ab := strings.SplitN(s, "\t", 2)
+	if len(ab) != 2 {
+		return "fuck: " + fmt.Sprint(ab)
+	}
+	return ab[0] + ": " + ab[1]
+}
+
 func mainCmd(args []string) int {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -91,7 +102,7 @@ func mainCmd(args []string) int {
 	if err := checker.CheckPackages(paths...); err != nil {
 		if e, ok := err.(errcheck.UncheckedErrors); ok {
 			for _, uncheckedError := range e.Errors {
-				fmt.Println(uncheckedError)
+				fmt.Println(fmtError(uncheckedError.Error()))
 			}
 			return exitUncheckedError
 		} else if err == errcheck.ErrNoGoFiles {

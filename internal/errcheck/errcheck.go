@@ -170,6 +170,8 @@ type uncheckedError struct {
 	line string
 }
 
+// it seems wrong to represent errors in the examined source as 'error' in this program -- the map is not the territory! (EK)
+
 func (e uncheckedError) Error() string {
 	pos := e.pos.String()
 	if i := strings.Index(pos, "/src/"); i != -1 {
